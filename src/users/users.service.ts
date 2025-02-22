@@ -44,6 +44,12 @@ export class UsersService {
     }
     return this.userModel.findById(id);
   }
+  async findByEmail(email: string) {
+    return await this.userModel.findOne({ email: email });
+  }
+  isValidatePassword(password: string, hashedPassword: string) {
+    return bcrypt.compareSync(password, hashedPassword);
+  }
 
   async update(updateUserDto: UpdateUserDto) {
     console.log('updateUserDto', updateUserDto);
