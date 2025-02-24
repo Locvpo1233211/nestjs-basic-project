@@ -63,7 +63,19 @@ export class CompaniesService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: number, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'not found company';
+    }
+    await this.companyModel.updateOne(
+      { _id: id },
+      {
+        deleteBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
+    return await this.companyModel.softDelete({ _id: id });
   }
 }
