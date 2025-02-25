@@ -21,6 +21,19 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @Public()
+  @Post('auth/register')
+  @ResponseMessage('register successfully')
+  async register(@Request() req) {
+    console.log('req.body', req.body);
+    let result = await this.authService.register(req.body);
+    console.log('result', result);
+    return {
+      _id: result._id,
+      createdAt: result.createdAt,
+    };
+  }
+
   @Get('profile')
   async getProfile(@Request() req) {
     return req.user;

@@ -12,7 +12,11 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
-    let isValid = this.usersService.isValidatePassword(pass, user.password);
+    console.log('user', user);
+    let isValid = await this.usersService.isValidatePassword(
+      pass,
+      user.password,
+    );
     if (user && isValid) {
       const { password, ...result } = user;
       return result;
@@ -35,5 +39,9 @@ export class AuthService {
       name: user.name,
       role: user.role,
     };
+  }
+  async register(user) {
+    console.log('here', user);
+    return this.usersService.create(user);
   }
 }
