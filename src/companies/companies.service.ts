@@ -6,6 +6,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
+import aqp from 'api-query-params';
+import { isEmpty } from 'rxjs';
 
 @Injectable()
 export class CompaniesService {
@@ -33,8 +35,33 @@ export class CompaniesService {
     }
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll(limit: number, page: number, qs: string) {
+    let { filter, projection, population } = aqp(qs);
+    let { sort } = aqp(qs);
+    delete filter.page;
+    let offset = (+page - 1) * limit;
+    let defaultLimit = limit ? +limit : 10;
+    const totalItems = (await this.companyModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+    console.log('filter', filter);
+    console.log('sort', sort);
+
+    const result = await this.companyModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .populate(population)
+      .exec();
+    return {
+      meta: {
+        totalItems,
+        totalPages,
+        page,
+        limit,
+      },
+      result,
+    };
   }
 
   findOne(id: number) {
