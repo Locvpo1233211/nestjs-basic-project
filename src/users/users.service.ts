@@ -57,7 +57,7 @@ export class UsersService {
         console.log('aaa');
         const hashedPassword = this.getHashedPassword(result.password);
         let password = hashedPassword;
-        reuslt = this.userModel.create({
+        reuslt = await this.userModel.create({
           email: result.email,
           password: password,
           name: result.name,
@@ -69,7 +69,6 @@ export class UsersService {
           gender: result.gender,
           role: result.role,
         });
-        console.log('reusltaaaaaas', reuslt);
         return reuslt;
       }
     }
