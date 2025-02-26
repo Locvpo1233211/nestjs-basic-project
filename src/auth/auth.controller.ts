@@ -4,11 +4,13 @@ import {
   Post,
   Render,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public, ResponseMessage } from './decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
+import { Response, response } from 'express';
 
 @Controller()
 export class AuthController {
@@ -17,8 +19,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   @ResponseMessage('Login successfully')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Request() req, @Res({ passthrough: true }) res: Response) {
+    return this.authService.login(req.user, res);
   }
 
   @Public()

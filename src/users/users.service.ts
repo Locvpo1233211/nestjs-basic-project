@@ -115,7 +115,7 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(updateUserDto.id)) {
       throw new BadRequestException('not remove user');
     }
     console.log('updateUserDto', updateUserDto.company._id);
@@ -158,5 +158,13 @@ export class UsersService {
       },
     );
     return await this.userModel.softDelete({ _id: id });
+  }
+  async updateUserRefeshToken(id: string, refeshToken: string) {
+    return await this.userModel.updateOne(
+      { _id: id },
+      {
+        refeshToken: refeshToken,
+      },
+    );
   }
 }
