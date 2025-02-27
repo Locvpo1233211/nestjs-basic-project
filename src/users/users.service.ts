@@ -28,6 +28,7 @@ export class UsersService {
       throw new BadRequestException('Email already exists');
     } else {
       if (user) {
+        console.log('user', user);
         const hashedPassword = this.getHashedPassword(result.password);
         let password = hashedPassword;
         reuslt = this.userModel.create({
@@ -73,8 +74,10 @@ export class UsersService {
 
   async findAll(limit, page, qs) {
     let { filter, projection, population } = aqp(qs);
+    console.log('filter', filter);
     let { sort } = aqp(qs);
-    delete filter.page;
+    delete filter.pageSize;
+    delete filter.current;
     let offset = (+page - 1) * limit;
     let defaultLimit = limit ? +limit : 10;
     const totalItems = (await this.userModel.find(filter)).length;
