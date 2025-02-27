@@ -159,12 +159,17 @@ export class UsersService {
     );
     return await this.userModel.softDelete({ _id: id });
   }
-  async updateUserRefeshToken(id: string, refeshToken: string) {
+  async updateUserRefeshToken(id: string, refreshToken: string) {
+    console.log('refeshToken', refreshToken, id);
     return await this.userModel.updateOne(
       { _id: id },
       {
-        refeshToken: refeshToken,
+        refreshToken: refreshToken,
       },
     );
+  }
+  async findUserByRefeshToken(refreshToken: string) {
+    console.log('refeshTokenaa', refreshToken);
+    return await this.userModel.findOne({ refreshToken: refreshToken });
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
@@ -16,7 +16,6 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
-    console.log('user', user);
     let isValid = await this.usersService.isValidatePassword(
       pass,
       user.password,
@@ -36,15 +35,16 @@ export class AuthService {
       name: user.name,
       role: user.role,
     };
-    const refeshToken = this.refeshToken(payload);
-    await res.cookie('refeshToken', refeshToken, {
+    const refreshToken = this.refeshToken(payload);
+    await res.cookie('refeshToken', refreshToken, {
       httpOnly: true,
       secure: false,
       maxAge: ms(this.configService.get('JWT_REFESH_TOKEN_EXPIRE')),
     });
+    await this.usersService.updateUserRefeshToken(user._id, refreshToken);
     return {
       access_token: this.jwtService.sign(payload),
-      refeshToken: refeshToken,
+      refreshToken: refreshToken,
       user: {
         email: user.email,
         _id: user._id,
@@ -54,7 +54,6 @@ export class AuthService {
     };
   }
   async register(user) {
-    console.log('here', user);
     return this.usersService.create(user);
   }
   refeshToken(payload: any) {
@@ -63,5 +62,49 @@ export class AuthService {
       expiresIn: this.configService.get<number>('JWT_REFESH_TOKEN_EXPIRE'),
     });
     return refeshToken;
+  }
+  async handleRefresh(refreshToken: string, res: Response) {
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('JWT_REFESH_TOKEN_SECRECT'),
+      });
+      let user = await this.usersService.findUserByRefeshToken(refreshToken);
+      if (user) {
+        const payload = {
+          sub: 'token login',
+          iss: 'from server',
+          email: user.email,
+          _id: user._id,
+          name: user.name,
+          role: user.role,
+        };
+
+        const newRefreshToken = this.refeshToken(payload);
+        await this.usersService.updateUserRefeshToken(
+          user._id.toString(),
+          newRefreshToken,
+        );
+        res.clearCookie('refeshToken');
+        res.cookie('refeshToken', newRefreshToken, {
+          httpOnly: true,
+          secure: false,
+          maxAge: ms(this.configService.get('JWT_REFESH_TOKEN_EXPIRE')),
+        });
+
+        return {
+          access_token: this.jwtService.sign(payload),
+          user: {
+            email: user.email,
+            _id: user._id,
+            name: user.name,
+            role: user.role,
+          },
+        };
+      } else {
+        throw new BadRequestException('Invalid token');
+      }
+    } catch (e) {
+      throw new BadRequestException('Invalid token');
+    }
   }
 }
