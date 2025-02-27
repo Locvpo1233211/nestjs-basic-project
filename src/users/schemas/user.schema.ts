@@ -21,7 +21,8 @@ export class user {
   gender: string;
   @Prop()
   role: string;
-
+  @Prop()
+  refreshToken: string;
   @Prop({ type: Object })
   company: {
     _id: mongoose.Schema.Types.ObjectId;

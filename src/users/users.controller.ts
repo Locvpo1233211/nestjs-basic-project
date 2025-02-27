@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/passport/local-auth.guard';
 import { Public, User } from 'src/auth/decorator/customize';
+import { IUser } from './users.interface';
 
 @Controller('users')
 export class UsersController {
@@ -36,6 +37,7 @@ export class UsersController {
     @Query() qs: string,
   ) {
     let result = await this.usersService.findAll(+limit, +page, qs);
+    console.log('result', result);
     return result;
   }
 
@@ -48,14 +50,13 @@ export class UsersController {
   }
 
   @Patch()
-  async update(@Body() updateUserDto: UpdateUserDto) {
-    console.log('updateUserDto', updateUserDto);
-    let result = await this.usersService.update(updateUserDto);
-    return {};
+  async update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
+    let result = await this.usersService.update(updateUserDto, user);
+    return result;
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @User() user) {
+  async remove(@Param('id') id: string, @User() user: IUser) {
     return this.usersService.remove(id, user);
   }
 }

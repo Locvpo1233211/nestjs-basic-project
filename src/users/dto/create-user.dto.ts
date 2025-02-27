@@ -35,6 +35,8 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'role is required' })
   role: string;
+  @IsNotEmpty({ message: 'company is required' })
+  refreshToken: string;
   @Type(() => Company)
   company: Company;
   created_at: Date;
