@@ -107,4 +107,23 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
   }
+  async logout(refreshToken, user: IUser, res: Response) {
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('JWT_REFESH_TOKEN_SECRECT'),
+      });
+      let user = await this.usersService.findUserByRefeshToken(refreshToken);
+      if (user) {
+        res.clearCookie('refeshToken');
+        await this.usersService.updateUserRefeshToken(user._id.toString(), '');
+        return {
+          message: 'Logout successfully',
+        };
+      } else {
+        throw new BadRequestException('Invalid token');
+      }
+    } catch (e) {
+      throw new BadRequestException('Invalid token');
+    }
+  }
 }
