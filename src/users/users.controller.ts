@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/CreateUserDto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/passport/local-auth.guard';
 import { Public, User } from 'src/auth/decorator/customize';
@@ -51,6 +51,7 @@ export class UsersController {
 
   @Patch()
   async update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
+    console.log('result', updateUserDto);
     let result = await this.usersService.update(updateUserDto, user);
     return result;
   }

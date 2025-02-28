@@ -42,8 +42,8 @@ export class CompaniesService {
     delete filter.current;
     let offset = (+page - 1) * limit;
     let defaultLimit = limit ? +limit : 10;
-    const totalItems = (await this.companyModel.find(filter)).length;
-    const totalPages = Math.ceil(totalItems / defaultLimit);
+    const total = (await this.companyModel.find(filter)).length;
+    const pages = Math.ceil(total / defaultLimit);
     console.log('filter', filter);
     console.log('sort', sort);
 
@@ -56,10 +56,10 @@ export class CompaniesService {
       .exec();
     return {
       meta: {
-        totalItems,
-        totalPages,
-        page,
-        limit,
+        total,
+        pages,
+        current: page,
+        pageSize: limit,
       },
       result,
     };
