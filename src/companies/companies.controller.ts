@@ -17,7 +17,10 @@ import { IUser } from 'src/users/users.interface';
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
-
+  @Post('create1')
+  create1(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
+    return 'aaa';
+  }
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     console.log('abc', user);

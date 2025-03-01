@@ -1,15 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { User } from 'src/auth/decorator/customize';
+import { IUser } from 'src/users/users.interface';
 
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
-  create(@Body() createJobDto: CreateJobDto) {
-    return this.jobsService.create(createJobDto);
+  async create(@Body() createJobDto: CreateJobDto, @User() user: IUser) {
+    let result = await this.jobsService.create(createJobDto, user);
+    console.log('result', result);
+    return {
+      _id: result._id,
+      createdAt: result.createdAt,
+    };
   }
 
   @Get()

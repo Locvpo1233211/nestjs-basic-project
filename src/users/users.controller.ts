@@ -23,7 +23,6 @@ export class UsersController {
   @Post()
   async create(@Body() result: CreateUserDto, @User() user: IUser) {
     let info = await this.usersService.create(result, user);
-    console.log('info', info);
     return {
       _id: info._id,
       createdAt: info.createdAt,

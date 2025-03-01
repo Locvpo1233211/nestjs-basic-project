@@ -8,7 +8,7 @@ export class job {
   @Prop()
   name: string;
   @Prop()
-  skill: string;
+  skills: string[];
   @Prop()
   location: string;
   @Prop()
