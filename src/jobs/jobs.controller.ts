@@ -30,11 +30,11 @@ export class JobsController {
 
   @Get()
   findAll(
-    @Query('pageSize') limit: number,
-    @Query('current') page: number,
+    @Query('pageSize') pageSize: number,
+    @Query('current') current: number,
     @Query() qs: string,
   ) {
-    return this.jobsService.findAll(limit, page, qs);
+    return this.jobsService.findAll(pageSize, current, qs);
   }
 
   @Get(':id')
