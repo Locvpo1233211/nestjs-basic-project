@@ -38,13 +38,11 @@ export class AuthService {
     const refreshToken = this.refeshToken(payload);
     await res.cookie('refeshToken', refreshToken, {
       httpOnly: true,
-      secure: false,
       maxAge: ms(this.configService.get('JWT_REFESH_TOKEN_EXPIRE')),
     });
     await this.usersService.updateUserRefeshToken(user._id, refreshToken);
     return {
       access_token: this.jwtService.sign(payload),
-      refreshToken: refreshToken,
       user: {
         email: user.email,
         _id: user._id,
@@ -109,9 +107,6 @@ export class AuthService {
   }
   async logout(refreshToken, user: IUser, res: Response) {
     try {
-      this.jwtService.verify(refreshToken, {
-        secret: this.configService.get('JWT_REFESH_TOKEN_SECRECT'),
-      });
       let user = await this.usersService.findUserByRefeshToken(refreshToken);
       if (user) {
         res.clearCookie('refeshToken');

@@ -28,6 +28,7 @@ export class UsersService {
       throw new BadRequestException('Email already exists');
     } else {
       if (user) {
+        console.log('user', user);
         const hashedPassword = this.getHashedPassword(result.password);
         let password = hashedPassword;
         reuslt = this.userModel.create({
@@ -73,12 +74,14 @@ export class UsersService {
 
   async findAll(limit, page, qs) {
     let { filter, projection, population } = aqp(qs);
+    console.log('filter', filter);
     let { sort } = aqp(qs);
-    delete filter.page;
+    delete filter.pageSize;
+    delete filter.current;
     let offset = (+page - 1) * limit;
     let defaultLimit = limit ? +limit : 10;
-    const totalItems = (await this.userModel.find(filter)).length;
-    const Pages = Math.ceil(totalItems / defaultLimit);
+    const total = (await this.userModel.find(filter)).length;
+    const pages = Math.ceil(total / defaultLimit);
 
     const result = await this.userModel
       .find(filter)
@@ -90,10 +93,10 @@ export class UsersService {
       .exec();
     return {
       meta: {
-        totalItems,
-        Pages,
-        page,
-        limit,
+        total,
+        pages,
+        current: page,
+        pageSize: limit,
       },
       result,
     };
@@ -115,12 +118,11 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(updateUserDto.id)) {
-      throw new BadRequestException('not remove user');
+    if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
+      throw new BadRequestException('not update user');
     }
-    console.log('updateUserDto', updateUserDto.company._id);
     return await this.userModel.updateOne(
-      { _id: updateUserDto.id },
+      { _id: updateUserDto._id },
       {
         email: updateUserDto.email,
         password: updateUserDto.password,
@@ -144,8 +146,7 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('not remove user');
     }
-    console.log('user', user._id);
-    console.log('user', user.email);
+
     await this.userModel.updateOne(
       {
         _id: id,
@@ -160,7 +161,6 @@ export class UsersService {
     return await this.userModel.softDelete({ _id: id });
   }
   async updateUserRefeshToken(id: string, refreshToken: string) {
-    console.log('refeshToken', refreshToken, id);
     return await this.userModel.updateOne(
       { _id: id },
       {
@@ -169,7 +169,6 @@ export class UsersService {
     );
   }
   async findUserByRefeshToken(refreshToken: string) {
-    console.log('refeshTokenaa', refreshToken);
     return await this.userModel.findOne({ refreshToken: refreshToken });
   }
 }

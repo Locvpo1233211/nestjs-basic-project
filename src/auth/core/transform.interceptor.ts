@@ -31,10 +31,9 @@ export class TransformInterceptor<T>
             'response_message',
             context.getHandler(),
           ) || '',
-        data: {
-          result: data,
-          meta: {}, // if this is supposed to be the actual return then replace {} with data.result
-        },
+
+        data,
+        meta: {}, // if this is supposed to be the actual return then replace {} with data.result
       })),
     );
   }

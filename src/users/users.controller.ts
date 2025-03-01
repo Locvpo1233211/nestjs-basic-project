@@ -21,9 +21,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() result: CreateUserDto, @User() user) {
+  async create(@Body() result: CreateUserDto, @User() user: IUser) {
     let info = await this.usersService.create(result, user);
-    console.log('info', info);
     return {
       _id: info._id,
       createdAt: info.createdAt,
@@ -32,12 +31,12 @@ export class UsersController {
 
   @Get()
   async findAll(
-    @Query('limit') limit: number,
-    @Query('page') page: number,
+    @Query('pageSize') limit: number,
+    @Query('current') page: number,
     @Query() qs: string,
   ) {
+    console.log('result', limit, page, qs);
     let result = await this.usersService.findAll(+limit, +page, qs);
-    console.log('result', result);
     return result;
   }
 
@@ -51,6 +50,7 @@ export class UsersController {
 
   @Patch()
   async update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
+    console.log('result', updateUserDto);
     let result = await this.usersService.update(updateUserDto, user);
     return result;
   }
