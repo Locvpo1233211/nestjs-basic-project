@@ -118,7 +118,6 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {
-    console.log('updateUserDtoaaa', updateUserDto._id);
     if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
       throw new BadRequestException('not update user');
     }
@@ -147,8 +146,7 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('not remove user');
     }
-    console.log('user', user._id);
-    console.log('user', user.email);
+
     await this.userModel.updateOne(
       {
         _id: id,
