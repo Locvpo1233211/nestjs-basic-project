@@ -64,7 +64,7 @@ export class CompaniesService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} company`;
+    return this.companyModel.findById(id);
   }
 
   async update(id: number, updateCompanyDto: UpdateCompanyDto, user: IUser) {
