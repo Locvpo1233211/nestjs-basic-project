@@ -20,9 +20,7 @@ export class CompaniesService {
       console.log(createCompanyDto);
 
       let result = await this.companyModel.create({
-        name: createCompanyDto.name,
-        address: createCompanyDto.address,
-        description: createCompanyDto.description,
+        ...createCompanyDto,
         createdBy: {
           _id: user._id,
           email: user.email,
@@ -79,10 +77,7 @@ export class CompaniesService {
         _id: id,
       },
       {
-        name: updateCompanyDto.name,
-
-        address: updateCompanyDto.address,
-        description: updateCompanyDto.description,
+        ...updateCompanyDto,
         updatedBy: {
           _id: user._id,
           email: user.email,

@@ -11,7 +11,7 @@ import {
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'src/auth/decorator/customize';
+import { Public, User } from 'src/auth/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
 @Controller('companies')
@@ -28,6 +28,7 @@ export class CompaniesController {
   }
 
   @Get()
+  @Public()
   findAll(
     @Query('pageSize') limit: string,
     @Query('current') page: string,
@@ -37,6 +38,7 @@ export class CompaniesController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.companiesService.findOne(+id);
   }

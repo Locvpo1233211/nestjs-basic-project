@@ -27,6 +27,7 @@ export class JobsService {
       company: {
         _id: createJobDto.company._id,
         name: createJobDto.company.name,
+        logo: createJobDto.company.logo,
       },
       createdBy: {
         _id: user._id,
@@ -61,7 +62,7 @@ export class JobsService {
         pageSize,
         current,
       },
-      data: result,
+      result: result,
     };
   }
 
