@@ -7,56 +7,42 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/passport/local-auth.guard';
-import { Public, User } from 'src/auth/decorator/customize';
-import { IUser } from './users.interface';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() result: CreateUserDto, @User() user: IUser) {
-    let info = await this.usersService.create(result, user);
-    return {
-      _id: info._id,
-      createdAt: info.createdAt,
-    };
+  create(@Body() result: CreateUserDto) {
+    console.log('createUserDto', result);
+    return this.usersService.create(result);
   }
 
   @Get()
-  async findAll(
-    @Query('pageSize') limit: number,
-    @Query('current') page: number,
-    @Query() qs: string,
-  ) {
-    console.log('result', limit, page, qs);
-    let result = await this.usersService.findAll(+limit, +page, qs);
-    return result;
+  findAll() {
+    return this.usersService.findAll();
   }
 
   @Get(':id')
-  @Public()
-  async findOne(@Param('id') id: string) {
-    let result: any = await this.usersService.findOne(id);
-    let { password, ...user } = result._doc;
-    return user;
+  findOne(@Param('id') id: string) {
+    console.log('id', id);
+    return this.usersService.findOne(id);
   }
 
   @Patch()
-  async update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
-    console.log('result', updateUserDto);
-    let result = await this.usersService.update(updateUserDto, user);
-    return result;
+  update(@Body() updateUserDto: UpdateUserDto) {
+    console.log('updateUserDto', updateUserDto);
+    return this.usersService.update(updateUserDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @User() user: IUser) {
-    return this.usersService.remove(id, user);
+  remove(@Param('id') id: string) {
+    console.log('id', id);
+    return this.usersService.remove(id);
   }
 }
