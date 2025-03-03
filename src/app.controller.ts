@@ -21,4 +21,21 @@ export class AppController {
     private configService: ConfigService,
     private authService: AuthService,
   ) {}
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
+  async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
+
+  @Get('profile')
+  async getProfile(@Request() req) {
+    return req.user;
+  }
+
+  @Get()
+  @Render('index')
+  getHello() {
+    // return this.appService.getHello();
+  }
 }

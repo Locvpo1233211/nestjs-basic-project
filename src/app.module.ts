@@ -7,11 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
-import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
-import { CompaniesModule } from './companies/companies.module';
-import { JobsModule } from './jobs/jobs.module';
-import { FilesModule } from './files/files.module';
-import { ResumesModule } from './resumes/resumes.module';
+
 @Module({
   imports: [
     // MongooseModule.forRoot(
@@ -23,10 +19,6 @@ import { ResumesModule } from './resumes/resumes.module';
 
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
-        connectionFactory: (connection) => {
-          connection.plugin(softDeletePlugin);
-          return connection;
-        },
       }),
       inject: [ConfigService],
     }),
@@ -36,10 +28,6 @@ import { ResumesModule } from './resumes/resumes.module';
     }),
     UsersModule,
     AuthModule,
-    CompaniesModule,
-    JobsModule,
-    FilesModule,
-    ResumesModule,
   ],
 
   //

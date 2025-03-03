@@ -1,51 +1,24 @@
-import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  ValidateNested,
-} from 'class-validator';
-import mongoose from 'mongoose';
-import { IsUnique } from 'src/auth/decorator/customize';
-export class Company {
-  @IsNotEmpty()
-  _id: mongoose.Schema.Types.ObjectId;
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
-  @IsNotEmpty()
-  name: string;
-}
 export class CreateUserDto {
-  // @IsUnique({ message: 'Email đã tồn tại' }) // Kiểm tra email duy nhất
-  @IsEmail({}, { message: 'Email is invalid' })
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail()
   email: string;
 
-  @IsNotEmpty({ message: 'Password is required' })
+  @IsNotEmpty()
   password: string;
 
-  @IsNotEmpty({ message: 'Name is required' })
+  @IsNotEmpty()
   name: string;
 
+  @IsNotEmpty()
   phone: number;
 
-  @IsNotEmpty({ message: 'Age is required' })
+  @IsNotEmpty()
   age: number;
 
-  @IsNotEmpty({ message: 'Address is required' })
+  @IsNotEmpty()
   address: string;
 
-  @IsNotEmpty({ message: 'gender is required' })
-  gender: string;
-
-  @IsNotEmpty({ message: 'role is required' })
-  role: string;
-
-  @IsNotEmptyObject()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => Company)
-  company: Company;
   created_at: Date;
   updated_at: Date;
 }
