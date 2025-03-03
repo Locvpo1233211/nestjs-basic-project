@@ -34,9 +34,6 @@ export class CreateUserCvDto {
   @IsNotEmpty({ message: 'url is required' })
   url: string;
 
-  @IsNotEmpty({ message: 'status is required' })
-  status: string;
-
   @IsNotEmpty({ message: 'companyId is required ' })
   @IsMongoId()
   companyId: mongoose.Schema.Types.ObjectId;

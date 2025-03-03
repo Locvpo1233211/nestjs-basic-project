@@ -46,8 +46,7 @@ export class JobsService {
     let defaultLimit = pageSize ? +pageSize : 10;
     const total = (await this.jobModel.find(filter)).length;
     const pages = Math.ceil(total / defaultLimit);
-    console.log('filter', filter);
-    console.log('sort', sort);
+
     const result = await this.jobModel
       .find(filter)
       .skip(offset)
