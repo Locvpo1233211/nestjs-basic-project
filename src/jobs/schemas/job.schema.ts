@@ -23,6 +23,7 @@ export class job {
   company: {
     _id: mongoose.Schema.Types.ObjectId;
     name: string;
+    logo: string;
   };
   @Prop()
   startDate: Date;

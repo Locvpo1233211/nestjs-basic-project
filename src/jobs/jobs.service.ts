@@ -27,6 +27,7 @@ export class JobsService {
       company: {
         _id: createJobDto.company._id,
         name: createJobDto.company.name,
+        logo: createJobDto.company.logo,
       },
       createdBy: {
         _id: user._id,
@@ -45,8 +46,7 @@ export class JobsService {
     let defaultLimit = pageSize ? +pageSize : 10;
     const total = (await this.jobModel.find(filter)).length;
     const pages = Math.ceil(total / defaultLimit);
-    console.log('filter', filter);
-    console.log('sort', sort);
+
     const result = await this.jobModel
       .find(filter)
       .skip(offset)
@@ -61,7 +61,7 @@ export class JobsService {
         pageSize,
         current,
       },
-      data: result,
+      result: result,
     };
   }
 
