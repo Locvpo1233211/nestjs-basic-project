@@ -61,7 +61,7 @@ export class ResumesService {
         current: +page,
         pageSize: defaultLimit,
       },
-      data: result,
+      result: result,
     };
   }
 
@@ -70,6 +70,7 @@ export class ResumesService {
   }
 
   update(id: number, updateResumeDto: UpdateResumeDto, user: IUser) {
+    console.log('xx', id);
     return this.resumeModel.updateOne(
       { _id: id },
       {
