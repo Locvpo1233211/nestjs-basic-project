@@ -21,7 +21,7 @@ export class role {
     type: [mongoose.Schema.Types.ObjectId],
     ref: permission.name,
   })
-  permission: permission[];
+  permissions: permission[];
 
   @Prop()
   createdAt: Date;

@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import aqp from 'api-query-params';
 import { IUser } from './users.interface';
+import { permission } from 'src/permissions/schemas/permission.schema';
 
 @Injectable()
 export class UsersService {
@@ -90,6 +91,7 @@ export class UsersService {
       .limit(defaultLimit)
       .sort(sort as any)
       .populate(population)
+      .select(projection)
       .exec();
     return {
       meta: {
@@ -106,12 +108,18 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('not remove user');
     }
-    let user = this.userModel.findOne({ _id: id });
+    let user = this.userModel
+      .findOne({ _id: id })
+      .select('-password')
+      .populate({ path: 'role', select: { name: 1, _id: 1 } });
 
     return user;
   }
+
   async findByEmail(email: string) {
-    return await this.userModel.findOne({ email: email });
+    return await this.userModel
+      .findOne({ email: email })
+      .populate({ path: 'role', select: { name: 1, permission: 1 } });
   }
   isValidatePassword(password: string, hashedPassword: string) {
     return bcrypt.compareSync(password, hashedPassword);
@@ -145,6 +153,12 @@ export class UsersService {
   async remove(id: string, user: any) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('not remove user');
+    }
+    const foundUser = await this.userModel.findById({
+      _id: id,
+    });
+    if (foundUser.name === 'admin') {
+      throw new BadRequestException('Can not delete admin');
     }
 
     await this.userModel.updateOne(

@@ -19,5 +19,5 @@ export class CreatePermissionDto {
   method: string;
 
   @IsNotEmpty({ message: 'module is required' })
-  modules: string;
+  module: string;
 }
