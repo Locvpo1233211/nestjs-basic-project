@@ -14,6 +14,9 @@ import { Model } from 'mongoose';
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
+export const IS_PERMISSION = 'isPublicPermission';
+export const PublicPermission = () => SetMetadata(IS_PERMISSION, true);
+
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
