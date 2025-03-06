@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,18 +13,22 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import aqp from 'api-query-params';
 import { IUser } from './users.interface';
 import { permission } from 'src/permissions/schemas/permission.schema';
+import { role, roleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(userM.name) private userModel: SoftDeleteModel<userDocument>,
+    @InjectModel(role.name) private roleModel: SoftDeleteModel<roleDocument>,
   ) {}
   getHashedPassword(password: string) {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
     return hash;
   }
-  async create(result: CreateUserDto, user?: any) {
+  async create(result: CreateUserDto, user?: IUser) {
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE });
     let checkUser = await this.userModel
       .findOne({ email: result.email })
       .exec();
@@ -42,7 +50,7 @@ export class UsersService {
           created_at: result.created_at,
           updated_at: result.updated_at,
           gender: result.gender,
-          role: result.role,
+          role: userRole?._id,
           company: {
             _id: result.company._id,
             name: result.company.name,
@@ -66,7 +74,7 @@ export class UsersService {
           created_at: result.created_at,
           updated_at: result.updated_at,
           gender: result.gender,
-          role: result.role,
+          role: userRole?._id,
         });
         return reuslt;
       }
@@ -106,7 +114,7 @@ export class UsersService {
 
   findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('not remove user');
+      throw new UnauthorizedException('not Found user');
     }
     let user = this.userModel
       .findOne({ _id: id })
@@ -119,7 +127,7 @@ export class UsersService {
   async findByEmail(email: string) {
     return await this.userModel
       .findOne({ email: email })
-      .populate({ path: 'role', select: { name: 1, permission: 1 } });
+      .populate({ path: 'role', select: { name: 1 } });
   }
   isValidatePassword(password: string, hashedPassword: string) {
     return bcrypt.compareSync(password, hashedPassword);
@@ -183,6 +191,8 @@ export class UsersService {
     );
   }
   async findUserByRefeshToken(refreshToken: string) {
-    return await this.userModel.findOne({ refreshToken: refreshToken });
+    return await this.userModel
+      .findOne({ refreshToken: refreshToken })
+      .populate({ path: 'role', select: { name: 1 } });
   }
 }
