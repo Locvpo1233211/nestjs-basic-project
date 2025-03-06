@@ -58,7 +58,7 @@ export class RolesService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     if (!mongo.ObjectId.isValid(id)) {
       throw new UnauthorizedException('Invalid ID');
     }

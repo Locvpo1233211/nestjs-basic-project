@@ -12,10 +12,14 @@ import { Public, ResponseMessage, User } from './decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Request, Response, response } from 'express';
 import { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService,
+  ) {}
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
@@ -43,7 +47,10 @@ export class AuthController {
   }
   @ResponseMessage('Logout successfully')
   @Get('auth/account')
-  getAccount(@User() user: IUser) {
+  async getAccount(@User() user: IUser) {
+    const temp = (await this.roleService.findOne(user.role._id)) as any;
+    user.permissions = temp.permissions;
+    console.log('user', user);
     return { user };
   }
 
