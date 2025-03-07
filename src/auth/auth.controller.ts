@@ -13,6 +13,7 @@ import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Request, Response, response } from 'express';
 import { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller()
 export class AuthController {
@@ -22,6 +23,7 @@ export class AuthController {
   ) {}
   @Public()
   @UseGuards(LocalAuthGuard)
+  @UseGuards(ThrottlerGuard)
   @Post('auth/login')
   @ResponseMessage('Login successfully')
   async login(@Req() req, @Res({ passthrough: true }) res: Response) {
