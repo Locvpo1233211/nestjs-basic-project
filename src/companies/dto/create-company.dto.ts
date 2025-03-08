@@ -10,6 +10,9 @@ export class CreateCompanyDto {
   @IsNotEmpty({ message: 'Address is required' })
   address: string;
 
+  @IsNotEmpty({ message: 'Logo is required' })
+  logo: string;
+
   created_at: Date;
   updated_at: Date;
 }

@@ -20,9 +20,7 @@ export class CompaniesService {
       console.log(createCompanyDto);
 
       let result = await this.companyModel.create({
-        name: createCompanyDto.name,
-        address: createCompanyDto.address,
-        description: createCompanyDto.description,
+        ...createCompanyDto,
         createdBy: {
           _id: user._id,
           email: user.email,
@@ -38,13 +36,12 @@ export class CompaniesService {
   async findAll(limit: number, page: number, qs: string) {
     let { filter, projection, population } = aqp(qs);
     let { sort } = aqp(qs);
-    delete filter.page;
+    delete filter.pageSize;
+    delete filter.current;
     let offset = (+page - 1) * limit;
     let defaultLimit = limit ? +limit : 10;
-    const totalItems = (await this.companyModel.find(filter)).length;
-    const totalPages = Math.ceil(totalItems / defaultLimit);
-    console.log('filter', filter);
-    console.log('sort', sort);
+    const total = (await this.companyModel.find(filter)).length;
+    const pages = Math.ceil(total / defaultLimit);
 
     const result = await this.companyModel
       .find(filter)
@@ -55,17 +52,17 @@ export class CompaniesService {
       .exec();
     return {
       meta: {
-        totalItems,
-        totalPages,
-        page,
-        limit,
+        total,
+        pages,
+        current: page,
+        pageSize: limit,
       },
       result,
     };
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} company`;
+    return this.companyModel.findById(id);
   }
 
   async update(id: number, updateCompanyDto: UpdateCompanyDto, user: IUser) {
@@ -78,10 +75,7 @@ export class CompaniesService {
         _id: id,
       },
       {
-        name: updateCompanyDto.name,
-
-        address: updateCompanyDto.address,
-        description: updateCompanyDto.description,
+        ...updateCompanyDto,
         updatedBy: {
           _id: user._id,
           email: user.email,
