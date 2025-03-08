@@ -15,7 +15,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from 'src/auth/passport/local-auth.guard';
 import { Public, User } from 'src/auth/decorator/customize';
 import { IUser } from './users.interface';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
