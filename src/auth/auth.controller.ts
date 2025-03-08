@@ -13,8 +13,11 @@ import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Request, Response, response } from 'express';
 import { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
-
-@Controller()
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { UserLoginDto } from 'src/users/dto/create-user.dto';
+@ApiTags('Auth')
+@Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -22,14 +25,16 @@ export class AuthController {
   ) {}
   @Public()
   @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
+  @UseGuards(ThrottlerGuard)
+  @ApiBody({ type: UserLoginDto })
+  @Post('login')
   @ResponseMessage('Login successfully')
   async login(@Req() req, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(req.user, res);
   }
 
   @Public()
-  @Post('auth/register')
+  @Post('register')
   @ResponseMessage('register successfully')
   async register(@Req() req) {
     console.log('req.body', req.body);
@@ -46,7 +51,7 @@ export class AuthController {
     return req.user;
   }
   @ResponseMessage('Logout successfully')
-  @Get('auth/account')
+  @Get('account')
   async getAccount(@User() user: IUser) {
     const temp = (await this.roleService.findOne(user.role._id)) as any;
     user.permissions = temp.permissions;
@@ -56,14 +61,14 @@ export class AuthController {
 
   @Public()
   @ResponseMessage('refreshToken NEW')
-  @Get('auth/refresh')
+  @Get('refresh')
   refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies['refeshToken'];
     return this.authService.handleRefresh(refreshToken, res);
   }
 
   @ResponseMessage('logout User')
-  @Post('auth/logout')
+  @Post('logout')
   logout(
     @Req() req: Request,
     @User() user: IUser,

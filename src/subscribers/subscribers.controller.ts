@@ -12,7 +12,8 @@ import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { PublicPermission, User } from 'src/auth/decorator/customize';
 import { IUser } from 'src/users/users.interface';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Subscribers')
 @Controller('subscribers')
 export class SubscribersController {
   constructor(private readonly subscribersService: SubscribersService) {}

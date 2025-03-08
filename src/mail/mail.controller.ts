@@ -3,7 +3,8 @@ import { MailService } from './mail.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Public, ResponseMessage } from 'src/auth/decorator/customize';
 import { Cron, CronExpression } from '@nestjs/schedule';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Mail')
 @Controller('mail')
 export class MailController {
   constructor(
